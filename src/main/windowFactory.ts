@@ -8,7 +8,7 @@ export class MainWindowFactory {
       center: true,
       show: true,
       frame: true,
-      resizable: true,
+      resizable: false,
       width: 250,
       height: 400,
       webPreferences: {
@@ -21,7 +21,6 @@ export class MainWindowFactory {
 
     mainWindow.setMenu(null);
     mainWindow.loadFile(join(__dirname, 'renderer/index.html'));
-    mainWindow.webContents.openDevTools();
     return mainWindow;
   }
 }

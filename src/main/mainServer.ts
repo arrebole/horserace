@@ -1,67 +1,53 @@
-import axios from 'axios';
-import { WebSocket } from 'ws';
-import { Agent } from 'https';
-import type { AxiosInstance } from 'axios';
-import { interval } from 'rxjs';
+import { interval, take } from 'rxjs';
+import { HttpApiClient } from './api/httpclient';
+import { WebSockeClient } from './api/wsclient';
+import { LCUProcessSearcher } from './processSearcher';
+import { MainWindowFactory } from './windowFactory';
 
 export class Horserace {
 
-  constructor(options: {
+  static async create() {
+    return new Horserace({
+       ...await new LCUProcessSearcher().findCommanderFlagsUntil(),
+       mainWindow: new MainWindowFactory().create(),
+    })
+  }
+
+  private constructor(options: {
     port: string,
-    remotingAuthToken: string,
+    password: string,
     mainWindow: Electron.CrossProcessExports.BrowserWindow
   }) {
-    // http 客户端
-    this.httpClient = axios.create({
-      baseURL: `https://riot:${options.remotingAuthToken}@127.0.0.1:${options.port}`,
-      httpsAgent: new Agent({ rejectUnauthorized: false }),
-    });
-
-    // websocket 客户端
-    this.webSocketClient = new WebSocket(
-      `wss://riot:${options.remotingAuthToken}@127.0.0.1:${options.port}`,
-      {
-        agent: new Agent({ rejectUnauthorized: false }),
-      }
-    );
+    this.httpClient = new HttpApiClient(options)
+    this.webSocketClient = new WebSockeClient(options);
     this.mainWindow = options.mainWindow;
   }
 
-  private readonly httpClient: AxiosInstance;
-  private readonly webSocketClient: WebSocket;
+  private readonly httpClient: HttpApiClient;
+  private readonly webSocketClient: WebSockeClient;
   private readonly mainWindow: Electron.CrossProcessExports.BrowserWindow;
 
   async ipcListen() {
 
-    this.webSocketClient.on('open', () => {
-      this.webSocketClient.send(JSON.stringify([5, 'OnJsonApiEvent']));
+    // 匹配完成时自动接受对局
+    this.webSocketClient.on('readyCheck', async () => {
+      await this.httpClient.acceptCurrentMatch();
     });
 
-    this.webSocketClient.on('message', async (message) => {
-      try {
-        // @ts-ignore
-        const [n, event, packet] = JSON.parse(message);
-        switch (packet.uri) {
-          case '/lol-gameflow/v1/gameflow-phase':
-            // 匹配完成事件，自动接受对局 
-            if (packet.data === 'ReadyCheck') {
-              await this.httpClient.post(
-                '/lol-matchmaking/v1/ready-check/accept',
-                null,
-              );
-            }
-            break;
-        }
-      } catch (e) { }
-    });
-
-    // 定时任务
-    // 更新用户信息
-    interval(10 * 1000).subscribe(async (n) => {
-      const { data } = await this.httpClient.get(
-        '/lol-summoner/v1/current-summoner',
+    // 游戏结算时更新用户信息
+    this.webSocketClient.on('PreEndOfGame', async () => {
+      this.mainWindow.webContents.send(
+        'update-profile',
+        await this.httpClient.findCurrentSummoner()
       );
-      this.mainWindow.webContents.send('update-profile', data);
+    })
+
+    // 展示用户信息
+    interval(1000).pipe(take(5)).subscribe(async ()=>{
+      this.mainWindow.webContents.send(
+        'update-profile',
+        await this.httpClient.findCurrentSummoner()
+      );
     });
 
     return this;

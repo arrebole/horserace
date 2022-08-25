@@ -14,15 +14,15 @@ export class LCUProcessSearcher {
 
     const pid = stdout.match(/--app-pid=(\d+)/);
     const port = stdout.match(/--app-port=(\d+)/);
-    const remotingAuthToken = stdout.match(/--remoting-auth-token=(.+?)\"/);
-    if (!pid || !port || !remotingAuthToken) {
+    const password = stdout.match(/--remoting-auth-token=(.+?)\"/);
+    if (!pid || !port || !password) {
       return null;
     }
 
     return {
       pid: pid[1],
       port: port[1],
-      remotingAuthToken: remotingAuthToken[1],
+      password: password[1],
     }
   }
 
