@@ -20,7 +20,7 @@ export class MainWindowFactory {
     });
 
     mainWindow.setMenu(null);
-    mainWindow.loadFile('renderer/index.html');
+    mainWindow.loadFile(join(__dirname, 'renderer/index.html'));
     mainWindow.webContents.openDevTools();
     return mainWindow;
   }

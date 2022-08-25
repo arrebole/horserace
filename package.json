@@ -1,10 +1,32 @@
 {
   "name": "horserace",
   "version": "1.0.0",
+  "main": "target/dist/main.js",
+  "build": {
+    "files": [
+      "target/dist/**/*",
+      "package.json"
+    ],
+    "asar": false,
+    "directories": {
+      "output": "target"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  },
   "scripts": {
-    "build-main": "tsc --project tsconfig.json",
-    "build-renderer": "vite build --config vite.config.js",
-    "build": "npm run build-main && npm run build-renderer",
+    "build:main": "tsc --project tsconfig.json",
+    "build:renderer": "vite build --config vite.config.js",
+    "build:release": "electron-builder",
+    "build": "npm run build:main && npm run build:renderer && npm run build:release",
     "start:dev": "vite --config vite.config.js",
     "start": "electron ./dist/main.js"
   },
@@ -19,7 +41,8 @@
     "@typescript-eslint/parser": "^5.34.0",
     "@vitejs/plugin-vue": "^3.0.3",
     "autoprefixer": "^10.4.8",
-    "electron": "^20.0.3",
+    "electron": "^20.1.0",
+    "electron-builder": "^23.3.3",
     "eslint": "^8.22.0",
     "postcss": "^8.4.16",
     "tailwindcss": "^3.1.8",

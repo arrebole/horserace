@@ -6,7 +6,7 @@ export default defineConfig({
   base: './',
   build: {
     target: 'ESNext',
-    outDir: 'dist/renderer',
+    outDir: 'target/dist/renderer',
     assetsDir: 'assets',
     emptyOutDir: true,
     rollupOptions: {
