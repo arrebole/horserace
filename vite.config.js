@@ -8,7 +8,13 @@ export default defineConfig({
     target: 'ESNext',
     outDir: 'dist/renderer',
     assetsDir: 'assets',
-    minify: "esbuild",
     emptyOutDir: true,
+    rollupOptions: {
+      output: { format: 'cjs' },
+      external: ['electron'],
+    },
+  },
+  optimizeDeps: {
+    exclude: ['electron'],
   },
 })

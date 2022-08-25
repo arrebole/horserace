@@ -1,9 +1,14 @@
 import { app } from 'electron';
+import { Horserace } from './mainServer';
+import { LCUProcessSearcher } from './processSearcher';
 import { MainWindowFactory } from './windowFactory';
 
-function main() {
-  app.whenReady()
-    .then(() => new MainWindowFactory().create())
+async function main() {
+  await app.whenReady()
+
+  const mainWindow = new MainWindowFactory().create();
+  const flags = await new LCUProcessSearcher().findCommanderFlagsUntil();
+  await new Horserace({ ...flags, mainWindow }).ipcListen();
 }
 
 main();

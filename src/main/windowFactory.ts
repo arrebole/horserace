@@ -1,26 +1,27 @@
+import { join } from 'node:path';
 import { BrowserWindow } from 'electron';
 
 export class MainWindowFactory {
-    create() {
-        const mainWindow = new BrowserWindow({
-            title: 'Horserace',
-            center: true,
-            show: true,
-            frame: false,
-            resizable: true,
-            width: 400,
-            height: 650,
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
-                webSecurity: false,
-            },
-        });
+  create() {
+    const mainWindow = new BrowserWindow({
+      title: 'Horserace',
+      center: true,
+      show: true,
+      frame: true,
+      resizable: true,
+      width: 250,
+      height: 400,
+      webPreferences: {
+        preload: join(__dirname, 'preload.js'),
+        nodeIntegration: true,
+        contextIsolation: true,
+        webSecurity: false,
+      },
+    });
 
-        mainWindow.loadFile('renderer/index.html');
-
-        mainWindow.webContents.openDevTools()
-
-        return mainWindow;
-    }
+    mainWindow.setMenu(null);
+    mainWindow.loadFile('renderer/index.html');
+    mainWindow.webContents.openDevTools();
+    return mainWindow;
+  }
 }

@@ -9,6 +9,7 @@
     "start": "electron ./dist/main.js"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "pinia": "^2.0.20",
     "vue": "^3.2.37",
     "vue-router": "^4.1.4"
