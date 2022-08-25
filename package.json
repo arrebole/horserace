@@ -28,15 +28,18 @@
     "build:release": "electron-builder",
     "build": "npm run build:main && npm run build:renderer && npm run build:release",
     "start:dev": "vite --config vite.config.js",
-    "start": "electron ./dist/main.js"
+    "start": "electron ./target/dist/main.js"
   },
   "dependencies": {
     "axios": "^0.27.2",
     "pinia": "^2.0.20",
+    "rxjs": "^7.5.6",
     "vue": "^3.2.37",
-    "vue-router": "^4.1.4"
+    "vue-router": "^4.1.4",
+    "ws": "^8.8.1"
   },
   "devDependencies": {
+    "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
     "@vitejs/plugin-vue": "^3.0.3",

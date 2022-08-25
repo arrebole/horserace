@@ -34,7 +34,7 @@
         <span>积分: </span>
         <span>{{ profile.rerollPoints.currentPoints }}</span>
         <span> / </span>
-        <span>{{ profile.rerollPoints.pointsToReroll }}</span>
+        <span>{{ profile.rerollPoints.pointsCostToRoll }}</span>
       </div>
     </section>
 
@@ -65,8 +65,8 @@ export default defineComponent({
         maxRolls: 2,
         numberOfRolls: 0,
         currentPoints: 0,
-        pointsCostToRoll: 0,
-        pointsToReroll: 250,
+        pointsCostToRoll: 250,
+        pointsToReroll: 0,
       },
     });
 
