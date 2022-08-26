@@ -1,5 +1,5 @@
 
-export interface Profile {
+export interface Summoner {
     // 账号ID
     accountId: number;
 
@@ -44,9 +44,18 @@ export interface Profile {
 }
 
 export interface RerollPoints {
+    
+    // 当前积分
     currentPoints: number
+
+    // 最大重选次数
     maxRolls: number
+
+    // 当前可以重选次数
     numberOfRolls: number
+
+    // 消费多少积分可以换重选次数
     pointsCostToRoll: number
+
     pointsToReroll: number
 }

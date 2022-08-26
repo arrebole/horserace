@@ -8,8 +8,8 @@ export class Horserace {
 
   static async create() {
     return new Horserace({
-       ...await new LCUProcessSearcher().findCommanderFlagsUntil(),
-       mainWindow: new MainWindowFactory().create(),
+      mainWindow: new MainWindowFactory().create(),
+      ...await new LCUProcessSearcher().findCommanderFlagsUntil(),
     })
   }
 
@@ -29,21 +29,35 @@ export class Horserace {
 
   async ipcListen() {
 
-    // 匹配完成时自动接受对局
+    // 等待接收对局状态 
+    // 自动接受对局
     this.webSocketClient.on('readyCheck', async () => {
       await this.httpClient.acceptCurrentMatch();
     });
 
+    // 英雄选择状态
+    // 查询我方战力
+    this.webSocketClient.on('ChampSelect', async (payload) => {
+      console.log('ChampSelect')
+      console.log(payload);
+    });
+
+    // 游戏开始时查询敌方战力
+    this.webSocketClient.on('GameStart', async (payload) => {
+      console.log('GameStart')
+      console.log(payload);
+    });
+
     // 游戏结算时更新用户信息
-    this.webSocketClient.on('PreEndOfGame', async () => {
+    this.webSocketClient.on('EndOfGame', async () => {
       this.mainWindow.webContents.send(
         'update-profile',
         await this.httpClient.findCurrentSummoner()
       );
-    })
+    });
 
     // 展示用户信息
-    interval(1000).pipe(take(5)).subscribe(async ()=>{
+    interval(1000).pipe(take(5)).subscribe(async () => {
       this.mainWindow.webContents.send(
         'update-profile',
         await this.httpClient.findCurrentSummoner()

@@ -12,12 +12,11 @@
       "output": "target"
     },
     "win": {
+      "requestedExecutionLevel": "highestAvailable",
       "target": [
         {
           "target": "zip",
-          "arch": [
-            "x64"
-          ]
+          "arch": [ "x64" ]
         }
       ]
     }

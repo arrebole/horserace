@@ -11,7 +11,7 @@ export class WebSockeClient extends EventEmitter {
         agent: new Agent({ rejectUnauthorized: false }),
       }
     );
-    
+
     this.webSocketClient.on('open', () => {
       this.webSocketClient.send(JSON.stringify([5, 'OnJsonApiEvent']));
     });
@@ -26,16 +26,17 @@ export class WebSockeClient extends EventEmitter {
       switch (payload.uri) {
         case '/lol-gameflow/v1/gameflow-phase':
           switch (payload.data) {
-
-            // 匹配完成等待确认事件
             case 'ReadyCheck':
               this.emit('readyCheck', payload);
               break
-            case 'PreEndOfGame':
-              this.emit('PreEndOfGame', payload);
+            case 'GameStart':
+              this.emit('GameStart', payload);
               break;
             case 'EndOfGame':
               this.emit('EndOfGame', payload);
+              break;
+            case 'ChampSelect':
+              this.emit('ChampSelect', payload);
               break;
           }
           break;
