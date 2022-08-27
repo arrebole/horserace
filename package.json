@@ -1,6 +1,6 @@
 {
   "name": "horserace",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "target/dist/main.js",
   "build": {
     "files": [
@@ -27,7 +27,7 @@
     "build:release": "electron-builder",
     "build": "npm run build:main && npm run build:renderer && npm run build:release",
     "start:dev": "vite --config vite.config.js",
-    "start": "electron ./target/dist/main.js"
+    "start": "chcp 65001 && electron ./target/dist/main.js"
   },
   "dependencies": {
     "axios": "^0.27.2",

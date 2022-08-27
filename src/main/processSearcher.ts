@@ -1,5 +1,6 @@
 import { promisify } from 'node:util';
 import { exec } from 'node:child_process';
+import { sleep } from './sleep';
 
 export class LCUProcessSearcher {
 
@@ -30,12 +31,10 @@ export class LCUProcessSearcher {
   async findCommanderFlagsUntil() {
     while (true) {
       const flags = await this.findCommanderFlags();
+      await sleep(3000);
       if (flags) {
         return flags;
       }
-      await new Promise(() =>
-        setTimeout(() => Promise.resolve(), 5000),
-      );
     }
   }
 }

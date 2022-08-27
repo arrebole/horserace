@@ -32,6 +32,9 @@ export class WebSockeClient extends EventEmitter {
             case 'GameStart':
               this.emit('GameStart', payload);
               break;
+            case 'PreEndOfGame':
+              this.emit('PreEndOfGame', payload);
+              break;
             case 'EndOfGame':
               this.emit('EndOfGame', payload);
               break;
