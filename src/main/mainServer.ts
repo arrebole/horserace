@@ -41,12 +41,13 @@ export class Horserace {
     this.webSocketClient.on('ChampSelect', async () => {
       await sleep(3000);
 
-      // 获取当前聊天组内(队友)信息与战力
+      // 获取当前聊天组内(队友)
       const summoners = await this.httpClient.findConversationSummoners();
-      const teamOne = summoners.map(async v => ({
-        name: v.displayName,
-        ...await this.httpClient.findSummonerEffect(v.summonerId),
-      }));
+
+      // 获取组内队友战力
+      const teamOne = summoners.map(v =>
+        this.httpClient.findSummonerEffect(v.summonerId),
+      );
       this.mainWindow.webContents.send('in-champSelect', {
         teamOne: await Promise.all(teamOne),
       });
@@ -55,14 +56,12 @@ export class Horserace {
     // 游戏开始阶段
     this.webSocketClient.on('GameStart', async () => {
       const game = await this.httpClient.findGameflowSession();
-      const teamOne = game.teamOne.map(async v => ({
-        name: v.summonerName,
-        ...await this.httpClient.findSummonerEffect(v.summonerId),
-      }));
-      const teamTwo = game.teamTwo.map(async v => ({
-        name: v.summonerName,
-        ...await this.httpClient.findSummonerEffect(v.summonerId),
-      }));
+      const teamOne = game.teamOne.map(summoner =>
+        this.httpClient.findSummonerEffect(summoner.summonerId),
+      );
+      const teamTwo = game.teamTwo.map(summoner =>
+        this.httpClient.findSummonerEffect(summoner.summonerId),
+      );
       this.mainWindow.webContents.send('in-gameStart', {
         teamOne: await Promise.all(teamOne),
         teamTwo: await Promise.all(teamTwo),

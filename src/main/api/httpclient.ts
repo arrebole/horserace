@@ -5,6 +5,8 @@ import { Matchlist } from '../types/matchs';
 import { Conversation, ConversationMsg } from '../types/conversation';
 import { Summoner } from '../types/summoner';
 import { PerformanceJudger } from '../performance';
+import { RankedStats } from '../types/rank';
+import { SummonerEffect } from '../types/summonerEffect';
 
 export class HttpApiClient {
   constructor(options: { password: string, port: string }) {
@@ -48,13 +50,14 @@ export class HttpApiClient {
   /**
    * 查询召唤师战力
    */
-  async findSummonerEffect(id: number | string) {
+  async findSummonerEffect(id: number | string): Promise<SummonerEffect> {
+    const summoner = await this.findOneSummoner(id);
     const matchs = await this.findSummonerMatchs(id);
-    const judger = new PerformanceJudger(matchs.games.games);
     return {
-      score: judger.score,
-      label: judger.label,
-    }
+      summonerName: summoner.displayName,
+      horse: new PerformanceJudger().recognizeHorse(matchs.games.games),
+      rank: await this.findSummonerRank(summoner.puuid)
+    };
   }
 
   /**
@@ -92,6 +95,43 @@ export class HttpApiClient {
     );
     // 通过召唤师ID查询召唤师信息
     return await Promise.all(summonersIds.map(v => this.findOneSummoner(v)));
+  }
+
+  /**
+   * 获取召唤师段位
+   */
+  async findSummonerRank(puuid: string) {
+    const { data } = await this.httpClient.get<RankedStats>(
+      `/lol-ranked/v1/ranked-stats/${puuid}`,
+    );
+
+    const tierZhMap: Record<string, string> = {
+      NONE: '未定级',
+      CHALLENGER: '王者',
+      GRANDMASTER: '宗师',
+      MASTER: '大师',
+      DIAMOND: '钻石',
+      PLATINUM: '铂金',
+      GOLD: '黄金',
+      SILVER: '白银',
+      BRONZE: '青铜',
+      IRON: '黑铁',
+    };
+
+    return {
+      flexSR: {
+        tier: data.queueMap.RANKED_FLEX_SR.tier,
+        tierZh: tierZhMap[data.queueMap.RANKED_FLEX_SR.tier],
+        division: data.queueMap.RANKED_FLEX_SR.division,
+        leaguePoints: data.queueMap.RANKED_FLEX_SR.leaguePoints,
+      },
+      solo5x5: {
+        tier: data.queueMap.RANKED_SOLO_5x5.tier,
+        tierZh: tierZhMap[data.queueMap.RANKED_SOLO_5x5.tier],
+        division: data.queueMap.RANKED_SOLO_5x5.division,
+        leaguePoints: data.queueMap.RANKED_SOLO_5x5.leaguePoints,
+      }
+    }
   }
 
   /**

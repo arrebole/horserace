@@ -9,7 +9,7 @@ export class MainWindowFactory {
       show: true,
       frame: true,
       resizable: false,
-      width: 250,
+      width: 420,
       height: 420,
       webPreferences: {
         preload: join(__dirname, 'preload.js'),

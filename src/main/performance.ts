@@ -1,13 +1,16 @@
 import { Game } from "./types/matchs";
 
 export class PerformanceJudger {
-  constructor(games: Game[]) {
-    this.score = this.getScore(games);
-    this.label = this.getLabel(this.score);
-  }
 
-  public readonly score: number;
-  public readonly label: string;
+
+  public recognizeHorse(games: Game[]) {
+    const score = this.getScore(games);
+    const label = this.getLabel(score);
+    return {
+      score,
+      label,
+    }
+  }
 
   private getLabel(score: number) {
     if (score >= 6000) {

@@ -1,6 +1,6 @@
 
 <template>
-  <section class="border p-4 border-gray-400">
+  <section class="border p-10 border-gray-400">
     <div class="my-1">
       <span title="召唤师的编号">ID: </span>
       <span>{{ profile.summonerId }}</span>
@@ -40,7 +40,7 @@
     </div>
   </section>
 
-  <section class="border border-t-0 p-4 border-gray-400">
+  <section class="border border-t-0 p-10 border-gray-400">
     <div>❤ 自动接受对局</div>
     <div>❤ 自动对局分析</div>
   </section>

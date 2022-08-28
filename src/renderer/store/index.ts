@@ -55,9 +55,11 @@ export const useStore = defineStore('main', () => {
   // 游戏结束事件
   // @ts-ignore
   window.electronAPI.onInEndOfGame(() => {
+    gameflow.teamOne = [];
+    gameflow.teamTwo = [];
     router.replace({ name: 'home' })
   });
-  
+
   // 第一次加载时，先获取当前用户信息
   // @ts-ignore
   window.electronAPI.onUpdateProfile((e, data) => {
