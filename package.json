@@ -1,6 +1,6 @@
 {
   "name": "horserace",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "target/dist/main.js",
   "build": {
     "files": [
@@ -16,7 +16,9 @@
       "target": [
         {
           "target": "zip",
-          "arch": [ "x64" ]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     }
