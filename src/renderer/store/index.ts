@@ -50,6 +50,7 @@ export const useStore = defineStore('main', () => {
     if (data.teamTwo) {
       gameflow.teamTwo = data.teamTwo;
     }
+    router.replace({ name: 'team' });
   });
 
   // 游戏结束事件
@@ -57,7 +58,7 @@ export const useStore = defineStore('main', () => {
   window.electronAPI.onInEndOfGame(() => {
     gameflow.teamOne = [];
     gameflow.teamTwo = [];
-    router.replace({ name: 'home' })
+    router.replace({ name: 'home' });
   });
 
   // 第一次加载时，先获取当前用户信息

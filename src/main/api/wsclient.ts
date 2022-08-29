@@ -26,6 +26,15 @@ export class WebSockeClient extends EventEmitter {
       switch (payload.uri) {
         case '/lol-gameflow/v1/gameflow-phase':
           switch (payload.data) {
+            case 'Lobby':
+              this.emit('Lobby', payload);
+              break;
+            case 'Matchmaking':
+              this.emit('Matchmaking', payload);
+              break;
+            case 'CheckedIntoTournament':
+              this.emit('CheckedIntoTournament', payload);
+              break;
             case 'ReadyCheck':
               this.emit('readyCheck', payload);
               break
@@ -41,8 +50,7 @@ export class WebSockeClient extends EventEmitter {
             case 'ChampSelect':
               this.emit('ChampSelect', payload);
               break;
-          }
-          break;
+        }
       }
     });
   }

@@ -55,8 +55,9 @@ export class HttpApiClient {
     const matchs = await this.findSummonerMatchs(id);
     return {
       summonerName: summoner.displayName,
+      games: matchs.games.games,
       horse: new PerformanceJudger().recognizeHorse(matchs.games.games),
-      rank: await this.findSummonerRank(summoner.puuid)
+      rank: await this.findSummonerRank(summoner.puuid),
     };
   }
 

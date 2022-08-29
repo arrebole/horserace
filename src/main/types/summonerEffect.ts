@@ -1,8 +1,14 @@
+import { Game } from "./matchs"
 
 
 export interface SummonerEffect {
 
     summonerName: string
+
+    /**
+     * 历史战绩
+     */
+    games: Game[],
 
     /**
      * 排位排名

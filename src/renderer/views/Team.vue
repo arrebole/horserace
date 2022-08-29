@@ -10,13 +10,11 @@
       v-for="summoner in gameflow.teamOne"
       :key="summoner.summonerName"
     >
-      <div class="w-24">{{ summoner.summonerName }}</div>
-
-      <div class="w-20">
+      <div class="w-28">{{ summoner.summonerName }}</div>
+      <div class="w-24 px-2">
         <span>{{ summoner.horse.label }}</span>
         <span>({{ summoner.horse.score }})</span>
       </div>
-
       <div class="px-1">
         <span>
           <span>{{ summoner.rank.flexSR.tierZh }}</span>
@@ -49,9 +47,9 @@
       v-for="summoner in gameflow.teamTwo"
       :key="summoner.summonerName"
     >
-      <div class="w-24">{{ summoner.summonerName }}</div>
+      <div class="w-28">{{ summoner.summonerName }}</div>
 
-      <div class="w-20">
+      <div class="w-24 px-2">
         <span>{{ summoner.horse.label }}</span>
         <span>({{ summoner.horse.score }})</span>
       </div>
