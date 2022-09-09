@@ -3,15 +3,13 @@ import { HttpApiClient } from './api/httpclient';
 import { WebSockeClient } from './api/wsclient';
 import { LCUProcessSearcher } from './processSearcher';
 import { sleep } from './sleep';
-import { Summoner } from './types/summoner';
 import { MainWindowFactory } from './windowFactory';
-
 export class Horserace {
 
   static async create() {
     return new Horserace({
       mainWindow: new MainWindowFactory().create(),
-      ...await new LCUProcessSearcher().findCommanderFlagsUntil(),
+      ...await new LCUProcessSearcher().awaitFindCommanderFlags(),
     })
   }
 

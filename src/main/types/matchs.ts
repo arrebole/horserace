@@ -23,6 +23,10 @@ export interface Game {
   gameType: string,
   mapId: number,
   participants: Participant[]
+  platformId: string
+  queueId: number
+  seasonId: number
+  teams: any[] 
 }
 
 export interface Participant {

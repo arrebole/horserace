@@ -28,7 +28,7 @@ export class LCUProcessSearcher {
   }
 
   // 不停的循环，直到查询到 LCU 的进程
-  async findCommanderFlagsUntil() {
+  async awaitFindCommanderFlags() {
     while (true) {
       const flags = await this.findCommanderFlags();
       await sleep(3000);

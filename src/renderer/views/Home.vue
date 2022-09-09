@@ -35,28 +35,20 @@
       <span>{{ profile.rerollPoints.currentPoints }}</span>
       <span> / </span>
       <span>{{
-        profile.rerollPoints.pointsCostToRoll * profile.rerollPoints.maxRolls
+      profile.rerollPoints.pointsCostToRoll * profile.rerollPoints.maxRolls
       }}</span>
     </div>
   </section>
 
-  <section class="border border-t-0 p-10 border-gray-400">
+  <section class="border border-t-0 px-10 py-6 border-gray-400">
     <div>❤ 自动接受对局</div>
     <div>❤ 自动对局分析</div>
   </section>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { defineComponent } from "vue";
 import { useStore } from '../store';
 
-export default defineComponent({
-  setup() {
-    const { profile } = storeToRefs(useStore());
-    return {
-      profile,
-    };
-  },
-});
+const { profile } = storeToRefs(useStore());
 </script>

@@ -10,7 +10,7 @@ export class MainWindowFactory {
       frame: true,
       resizable: false,
       width: 420,
-      height: 420,
+      height: 390,
       webPreferences: {
         preload: join(__dirname, 'preload.js'),
         nodeIntegration: true,

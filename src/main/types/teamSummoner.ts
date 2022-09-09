@@ -159,5 +159,6 @@ export interface TeamSummoner {
   role: any
 
   spell1Id: any
+
   spell2Id: any
 }
