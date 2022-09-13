@@ -7,6 +7,7 @@ import { Summoner } from '../types/summoner';
 import { PerformanceJudger } from '../performance';
 import { RankedStats } from '../types/rank';
 import { SummonerEffect } from '../types/summonerEffect';
+import { ChampSelectSession } from '../types/champSelectSession';
 
 export class HttpApiClient {
   constructor(options: { password: string, port: string }) {
@@ -55,7 +56,7 @@ export class HttpApiClient {
     const matchs = await this.findSummonerMatchs(id);
     return {
       summonerName: summoner.displayName,
-      games: matchs.games.games,
+      games: matchs.games.games.reverse(),
       horse: new PerformanceJudger().recognizeHorse(matchs.games.games),
       rank: await this.findSummonerRank(summoner.puuid),
     };
@@ -64,9 +65,12 @@ export class HttpApiClient {
   /**
    * 查询召唤师历史战绩
    */
-  async findSummonerMatchs(id: number | string) {
+  async findSummonerMatchs(accountId: number | string, begIndex = 0, endIndex = 20) {
     const { data } = await this.httpClient.get<Matchlist>(
-      `/lol-match-history/v3/matchlist/account/${id}`,
+      `/lol-match-history/v3/matchlist/account/${accountId}`,
+      {
+        params: { begIndex, endIndex },
+      }
     );
     return data;
   }
@@ -155,4 +159,25 @@ export class HttpApiClient {
     const matchlist = data as Matchlist;
     return matchlist.games.games;
   }
+
+  async findChampSelectSession() {
+    const { data } = await this.httpClient.get<ChampSelectSession>(
+      `/lol-champ-select/v1/session`,
+    );
+    return data;
+  }
+
+  //选择或者禁用英雄共用函数
+  // champSelectAction(actionID, champId: number, type: 'ban'| 'pick') {
+  //   try {
+  //     return this.httpClient.patch(
+  //       `/lol-champ-select/v1/session/actions/${actionID}`,
+  //       {
+  //         "completed": true,
+  //         "type": type,
+  //         "championId": champId
+  //       }
+  //     )
+  //   } catch (e) { }
+  // }
 }

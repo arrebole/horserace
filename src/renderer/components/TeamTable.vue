@@ -6,7 +6,7 @@
     :key="summoner.summonerName"
     @click="handleCloseGamesWindow"
   >
-    <div class="w-28 p-2" @click.stop="handleOpenGamesWindow(summoner)">
+    <div class="w-32 p-2" @click.stop="handleOpenGamesWindow(summoner)">
       {{ summoner.summonerName }}
     </div>
     <div class="w-24 p-2">

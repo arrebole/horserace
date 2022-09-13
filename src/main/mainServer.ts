@@ -4,6 +4,7 @@ import { WebSockeClient } from './api/wsclient';
 import { LCUProcessSearcher } from './processSearcher';
 import { sleep } from './sleep';
 import { MainWindowFactory } from './windowFactory';
+import { ipcMain } from 'electron';
 export class Horserace {
 
   static async create() {
@@ -26,13 +27,19 @@ export class Horserace {
   private readonly httpClient: HttpApiClient;
   private readonly webSocketClient: WebSockeClient;
   private readonly mainWindow: Electron.CrossProcessExports.BrowserWindow;
+  
+  private autoPickChampionId: number;
+  private autoBanChampionId: number;
+  private autoAcceptMatch = true;
 
   async ipcListen() {
 
     // 等待接收对局状态 
     // 自动接受对局
     this.webSocketClient.on('readyCheck', async () => {
-      await this.httpClient.acceptMatch();
+      if (this.autoAcceptMatch) {
+        await this.httpClient.acceptMatch();
+      }
     });
 
     // 英雄选择状态
@@ -74,6 +81,18 @@ export class Horserace {
       this.mainWindow.webContents.send('update-profile', {
         profile: await this.httpClient.findCurrentSummoner(),
       });
+    });
+
+    ipcMain.on('set-AutoPickChampion', (event, championId: number) =>{
+      this.autoPickChampionId = championId;
+    });
+
+    ipcMain.on('set-AutoBanChampion', (event, championId: number) =>{
+      this.autoBanChampionId = championId;
+    });
+
+    ipcMain.on('set-AutoAcceptMatch', (event, autoAcceptMatch: number) =>{
+      this.autoAcceptMatch = autoAcceptMatch == 0 ? false : true;
     });
 
     // 展示用户信息
