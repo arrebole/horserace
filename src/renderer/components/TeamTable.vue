@@ -27,12 +27,15 @@
       </span>
     </div>
   </div>
-  <GameHistory :games="games" v-if="isShowGameshWindow"/>
+  <GameHistory
+    v-if="isShowGameshWindow"
+    :summonerName="selectdSummoner?.summonerName"
+    :games="selectdSummoner?.games"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Game } from '../../main/types/matchs';
 import type { SummonerEffect } from '../../main/types/summonerEffect';
 import GameHistory from './GameHistory.vue';
 
@@ -44,17 +47,16 @@ const { summoners } = defineProps<Props>();
 const isShowGameshWindow = ref(false);
 
 // 需要展示的游戏对局记录
-const games = ref<Game[]>([]);
+const selectdSummoner = ref<SummonerEffect>();
 
 // 打开游戏对局窗口
 function handleOpenGamesWindow(summoner: SummonerEffect) {
   isShowGameshWindow.value = true;
-  games.value = summoner.games;
+  selectdSummoner.value = summoner;
 }
 
 function handleCloseGamesWindow() {
   isShowGameshWindow.value = false;
-  games.value = [];
 }
 
 </script>

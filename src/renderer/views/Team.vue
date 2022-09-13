@@ -8,7 +8,7 @@
     </section>
 
     <section v-if="gameflow.teamOne.length > 0">
-      <div class="h-4"></div>
+      <div class="h-3"></div>
     </section>
 
     <section v-if="gameflow.teamTwo.length > 0" class="text-xs shadow-md">
