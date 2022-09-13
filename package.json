@@ -1,6 +1,6 @@
 {
   "name": "horserace",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "target/dist/main.js",
   "build": {
     "files": [
