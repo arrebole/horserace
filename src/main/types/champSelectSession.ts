@@ -1,14 +1,17 @@
 
 
 export interface ChampSelectSession {
-    actions: Action[]
+    actions: Action[][]
+    localPlayerCellId: number
 }
 
-interface Action {
+export interface Action {
     id: number
     type: "ban" | "pick"
     actorCellId: number
     championId: number
     completed: boolean
     pickTurn: number
+    isAllyAction: boolean
+    isInProgress: boolean
 }

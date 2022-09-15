@@ -1,5 +1,5 @@
 import { Agent } from 'https';
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { GameflowSession } from '../types/gameFlowSession';
 import { Matchlist } from '../types/matchs';
 import { Conversation, ConversationMsg } from '../types/conversation';
@@ -7,7 +7,7 @@ import { Summoner } from '../types/summoner';
 import { PerformanceJudger } from '../performance';
 import { RankedStats } from '../types/rank';
 import { SummonerEffect } from '../types/summonerEffect';
-import { ChampSelectSession } from '../types/champSelectSession';
+import { Action, ChampSelectSession } from '../types/champSelectSession';
 
 export class HttpApiClient {
   constructor(options: { password: string, port: string }) {
@@ -160,24 +160,52 @@ export class HttpApiClient {
     return matchlist.games.games;
   }
 
-  async findChampSelectSession() {
+  /**
+   * 获取选人/办人会话
+   */
+  private async findChampSelectSession() {
     const { data } = await this.httpClient.get<ChampSelectSession>(
       `/lol-champ-select/v1/session`,
     );
     return data;
   }
 
-  //选择或者禁用英雄共用函数
-  // champSelectAction(actionID, champId: number, type: 'ban'| 'pick') {
-  //   try {
-  //     return this.httpClient.patch(
-  //       `/lol-champ-select/v1/session/actions/${actionID}`,
-  //       {
-  //         "completed": true,
-  //         "type": type,
-  //         "championId": champId
-  //       }
-  //     )
-  //   } catch (e) { }
-  // }
+  /**
+   * 获取选人/办人会话中，自己的操作ID
+   */
+  async findChampSelectAction(type: 'ban' | 'pick') {
+    const champSelectSession = await this.findChampSelectSession();
+
+    // 从选择会话中获取自身召唤师的 action
+    for (const action of champSelectSession.actions) {
+      for (const item of action) {
+        if (
+          item.actorCellId == champSelectSession.localPlayerCellId
+          && item.isInProgress
+          && item.type == type
+          && !item.completed
+        ) {
+          return item;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   *  选择或者禁用英雄共用函数
+   */
+  updateChampSelectAction(action: Action, champId: number) {
+    // 通过 action.id 触发操作
+    return this.httpClient.patch(
+      `/lol-champ-select/v1/session/actions/${action.id}`,
+      {
+        completed: true,
+        type: action.type,
+        championId: champId
+      }
+    )
+    .then(()=> true)
+    .catch(() => false);
+  }
 }

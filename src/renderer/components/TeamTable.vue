@@ -1,11 +1,7 @@
 
 <template>
-  <div
-    class="flex border-gray-400 divide-x divide-gray-400 border"
-    v-for="summoner in summoners"
-    :key="summoner.summonerName"
-    @click="handleCloseGamesWindow"
-  >
+  <div class="flex border-gray-400 divide-x divide-gray-400 border" v-for="summoner in summoners"
+    :key="summoner.summonerName" @click="handleCloseGamesWindow">
     <div class="w-32 p-2" @click.stop="handleOpenGamesWindow(summoner)">
       {{ summoner.summonerName }}
     </div>
@@ -15,23 +11,21 @@
     </div>
     <div class="p-2">
       <span>
-        <span>{{ summoner.rank.flexSR.tierZh }}</span>
-        <span>{{ summoner.rank.flexSR.division }}</span>
-        <span>({{ summoner.rank.flexSR.leaguePoints }})</span>
-      </span>
-      <span>/</span>
-      <span>
         <span>{{ summoner.rank.solo5x5.tierZh }}</span>
         <span>{{ summoner.rank.solo5x5.division }}</span>
         <span>({{ summoner.rank.solo5x5.leaguePoints }})</span>
       </span>
+      <span>/</span>
+      <span>
+        <span>{{ summoner.rank.flexSR.tierZh }}</span>
+        <span>{{ summoner.rank.flexSR.division }}</span>
+        <span>({{ summoner.rank.flexSR.leaguePoints }})</span>
+      </span>
+
     </div>
   </div>
-  <GameHistory
-    v-if="isShowGameshWindow"
-    :summonerName="selectdSummoner?.summonerName"
-    :games="selectdSummoner?.games"
-  />
+  <GameHistory v-if="isShowGameshWindow" :summonerName="selectdSummoner?.summonerName"
+    :games="selectdSummoner?.games" />
 </template>
 
 <script setup lang="ts">

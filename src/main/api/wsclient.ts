@@ -1,5 +1,6 @@
 import { EventEmitter, WebSocket } from 'ws';
 import { Agent } from 'https';
+import { Stage } from '../types/stage';
 
 export class WebSockeClient extends EventEmitter {
   constructor(options: { password: string, port: string }) {
@@ -21,41 +22,15 @@ export class WebSockeClient extends EventEmitter {
       if (payload === null) {
         return;
       }
-
-      // 匹配事件类型
-      switch (payload.uri) {
-        case '/lol-gameflow/v1/gameflow-phase':
-          switch (payload.data) {
-            case 'Lobby':
-              this.emit('Lobby', payload);
-              break;
-            case 'Matchmaking':
-              this.emit('Matchmaking', payload);
-              break;
-            case 'CheckedIntoTournament':
-              this.emit('CheckedIntoTournament', payload);
-              break;
-            case 'ReadyCheck':
-              this.emit('readyCheck', payload);
-              break
-            case 'GameStart':
-              this.emit('GameStart', payload);
-              break;
-            case 'PreEndOfGame':
-              this.emit('PreEndOfGame', payload);
-              break;
-            case 'EndOfGame':
-              this.emit('EndOfGame', payload);
-              break;
-            case 'ChampSelect':
-              this.emit('ChampSelect', payload);
-              break;
-        }
+      if (payload.uri === '/lol-gameflow/v1/gameflow-phase') {
+        this.stage = payload.data;
+        this.emit(payload.data, payload);
       }
     });
   }
 
   private readonly webSocketClient: WebSocket;
+  public stage: Stage = Stage.Lobby;
 
   private jsonParse(message: any) {
     try {
@@ -65,4 +40,5 @@ export class WebSockeClient extends EventEmitter {
       return null;
     }
   }
+
 }
