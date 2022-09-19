@@ -57,7 +57,7 @@ export class HttpApiClient {
     return {
       summonerName: summoner.displayName,
       games: matchs.games.games.reverse(),
-      horse: new PerformanceJudger().recognizeHorse(matchs.games.games),
+      horse: new PerformanceJudger().parse(matchs.games.games),
       rank: await this.findSummonerRank(summoner.puuid),
     };
   }
