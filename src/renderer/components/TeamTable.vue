@@ -1,8 +1,11 @@
 
 <template>
-  <div class="flex border-gray-400 divide-x divide-gray-400 border" v-for="summoner in summoners"
-    :key="summoner.summonerName" @click="handleCloseGamesWindow">
-    <div class="w-32 p-2" @click.stop="handleOpenGamesWindow(summoner)">
+  <div 
+    class="flex border-gray-400 divide-x divide-gray-400 border" 
+    v-for="summoner in summoners"
+    :key="summoner.summonerName"
+  >
+    <div class="w-32 p-2 cursor-pointer hover:bg-green-700" @click.stop="handleOpenGamesWindow(summoner)">
       {{ summoner.summonerName }}
     </div>
     <div class="w-24 p-2">
@@ -24,8 +27,12 @@
 
     </div>
   </div>
-  <GameHistory v-if="isShowGameshWindow" :summonerName="selectdSummoner?.summonerName"
-    :games="selectdSummoner?.games" />
+  <GameHistory 
+    v-if="isShowGameshWindow"
+    :summonerName="selectdSummoner?.summonerName"
+    :games="selectdSummoner?.games"
+    :onClose="handleCloseGamesWindow"
+  />
 </template>
 
 <script setup lang="ts">
