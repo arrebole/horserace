@@ -3,7 +3,8 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import Home from './views/Home.vue';
-import Team from './views/Team.vue';
+import Game from './views/Game.vue';
+import Select from './views/Select.vue';
 
 
 createApp(App)
@@ -12,7 +13,8 @@ createApp(App)
     history: createWebHashHistory(),
     routes: [
       { name: 'home', path: '/', component: Home },
-      { name: 'team', path: '/team', component: Team },
+      { name: 'select', path: '/select', component: Select },
+      { name: 'game', path: '/game', component: Game },
     ]
   }))
   .mount('#app');

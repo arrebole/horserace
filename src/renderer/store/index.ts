@@ -32,30 +32,31 @@ export const useStore = defineStore('main', () => {
     teamTwo: [],
   });
 
+
   // 进入选人事件
   // @ts-ignore
-  window.electronAPI.onInChampSelect((e, data)=>{
+  window.electronAPI?.onInChampSelect((e, data) => {
     if (data.teamOne) {
       gameflow.teamOne = data.teamOne;
     }
-    router.replace({ name: 'team' });
+    router.replace({ name: 'select' });
   });
 
   // 游戏开始事件
   // @ts-ignore
-  window.electronAPI.onInGameStart((e, data) => {
+  window.electronAPI?.onInGameStart((e, data) => {
     if (data.teamOne) {
       gameflow.teamOne = data.teamOne;
     }
     if (data.teamTwo) {
       gameflow.teamTwo = data.teamTwo;
     }
-    router.replace({ name: 'team' });
+    router.replace({ name: 'game' });
   });
 
   // 游戏结束事件
   // @ts-ignore
-  window.electronAPI.onInEndOfGame(() => {
+  window.electronAPI?.onInEndOfGame(() => {
     gameflow.teamOne = [];
     gameflow.teamTwo = [];
     router.replace({ name: 'home' });
@@ -63,7 +64,7 @@ export const useStore = defineStore('main', () => {
 
   // 第一次加载时，先获取当前用户信息
   // @ts-ignore
-  window.electronAPI.onUpdateProfile((e, data) => {
+  window.electronAPI?.onUpdateProfile((e, data) => {
     Object.assign(profile, data.profile);
   });
 
