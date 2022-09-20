@@ -1,12 +1,16 @@
 import { promisify } from 'node:util';
+import { EventEmitter } from 'node:events';
 import { exec } from 'node:child_process';
 import { sleep } from './sleep';
+import { Service } from 'typedi';
 
-export class LCUProcessSearcher {
+@Service()
+export class LCUProcessUtil {
+  private eventEmitter = new EventEmitter();
 
   // 查询 LCU 进程信息
-  async findCommanderFlags() {
-    const { stdout } = await promisify(exec)(
+  private async findCommanderFlags() {
+    const { stdout } = await promisify(exec) (
       "wmic PROCESS WHERE name='LeagueClientUx.exe' GET commandline /value",
     );
     if (!stdout) {
@@ -28,7 +32,7 @@ export class LCUProcessSearcher {
   }
 
   // 不停的循环，直到查询到 LCU 的进程
-  async awaitFindCommanderFlags() {
+  private async awaitFindCommanderFlags() {
     while (true) {
       const flags = await this.findCommanderFlags();
       await sleep(3000);
@@ -36,5 +40,19 @@ export class LCUProcessSearcher {
         return flags;
       }
     }
+  }
+
+  async refresh() {
+    const flag = await this.awaitFindCommanderFlags();
+    this.eventEmitter.emit('onChange', {
+      wsBaseURL: `wss://riot:${flag.password}@127.0.0.1:${flag.port}`,
+      httpBaseURL: `https://riot:${flag.password}@127.0.0.1:${flag.port}`
+    });
+    return this;
+  }
+
+  subscription(fn: (params: { wsBaseURL: string, httpBaseURL: string })=> void) {
+    this.eventEmitter.on('onChange', fn);
+    return this.refresh();
   }
 }
