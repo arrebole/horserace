@@ -1,26 +1,95 @@
+import { EventEmitter } from 'node:events';
+import axios, { AxiosInstance } from 'axios';
+import { WebSocket } from 'ws';
 import { Agent } from 'https';
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import { Service } from 'typedi';
+import { Stage } from '../types/stage';
+import { LCUProcessUtil } from '../lcuProcessUtil';
 import { GameflowSession } from '../types/gameFlowSession';
 import { Matchlist } from '../types/matchs';
 import { Conversation, ConversationMsg } from '../types/conversation';
 import { Summoner } from '../types/summoner';
-import { PerformanceJudger } from '../performance';
 import { RankedStats } from '../types/rank';
 import { SummonerEffect } from '../types/summonerEffect';
 import { Action, ChampSelectSession } from '../types/champSelectSession';
+import { PerformanceJudger } from '../performance';
 
-export class HttpApiClient {
-  constructor(options: { password: string, port: string }) {
-    this.httpClient = axios.create({
-      baseURL: `https://riot:${options.password}@127.0.0.1:${options.port}`,
-      httpsAgent: new Agent({ rejectUnauthorized: false }),
+@Service()
+export class LCUClient {
+  constructor(private readonly lCUProcessUtil: LCUProcessUtil) {
+
+    lCUProcessUtil.subscription(({ wsBaseURL }) => {
+      this.webSocketClient?.removeAllListeners();
+      if (this.webSocketClient?.readyState === 1) {
+        this.webSocketClient.close();
+      }
+      this.webSocketClient = this.createConnect(wsBaseURL);
     });
+
+    lCUProcessUtil.subscription(({ httpBaseURL }) => {
+      this.httpClient = axios.create({
+        baseURL: httpBaseURL,
+        httpsAgent: new Agent({ rejectUnauthorized: false }),
+      });
+    });
+
+    this.eventEmitter = new EventEmitter();
   }
-  private readonly httpClient: AxiosInstance;
+
+  private createConnect(wsBaseURL: string) {
+    const ws = new WebSocket(wsBaseURL,
+      {
+        agent: new Agent({ rejectUnauthorized: false }),
+      }
+    );
+
+    ws.on('open', () => {
+      this.webSocketClient.send(
+        JSON.stringify([5, 'OnJsonApiEvent'])
+      );
+      this.eventEmitter.emit('Connected');
+    });
+
+    ws.on('close', () => {
+      this.lCUProcessUtil.refresh();
+    });
+
+    ws.on('error', () => {
+      this.lCUProcessUtil.refresh();
+    });
+
+    ws.on('message', async (message) => {
+      const payload = this.jsonParse(message);
+      if (payload?.uri === '/lol-gameflow/v1/gameflow-phase') {
+        this.stage = payload.data;
+        this.eventEmitter.emit(payload.data, payload);
+      }
+    });
+    return ws;
+  }
+
+
+  private eventEmitter: EventEmitter;
+  private webSocketClient: WebSocket;
+  private httpClient: AxiosInstance;
+  public stage: Stage = Stage.Lobby;
+
+  private jsonParse(message: any) {
+    try {
+      const [code, topic, packet] = JSON.parse(message);
+      return packet;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  on(event: keyof typeof Stage | 'Connected', fn: any) {
+    this.eventEmitter.on(event, fn);
+  }
 
   /**
    * 接受当前对局
-   */
+  */
   acceptMatch() {
     return this.httpClient.post(
       '/lol-matchmaking/v1/ready-check/accept',
@@ -173,7 +242,8 @@ export class HttpApiClient {
   /**
    * 获取选人/办人会话中，自己的操作ID
    */
-  async findChampSelectAction(type: 'ban' | 'pick') {
+  async findChampSelectAction() {
+    const result: { pick?: Action, ban?: Action } = {};
     const champSelectSession = await this.findChampSelectSession();
 
     // 从选择会话中获取自身召唤师的 action
@@ -182,14 +252,13 @@ export class HttpApiClient {
         if (
           item.actorCellId == champSelectSession.localPlayerCellId
           && item.isInProgress
-          && item.type == type
           && !item.completed
         ) {
-          return item;
+          result[item.type] = item;
         }
       }
     }
-    return null;
+    return result;
   }
 
   /**
@@ -205,7 +274,7 @@ export class HttpApiClient {
         championId: champId
       }
     )
-    .then(()=> true)
-    .catch(() => false);
+      .then(() => true)
+      .catch(() => false);
   }
 }

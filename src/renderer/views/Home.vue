@@ -75,20 +75,19 @@ const { profile } = storeToRefs(useStore());
 // 自动接收对局
 function onChangeAutoAcceptMatch(e: Event) {
   // @ts-ignore
-  window.electronAPI.setAutoAcceptMatch(parseInt(e.target.value));
+  window.electronAPI.setConfig({ autoAcceptMatch: parseInt(e.target.value) });
 }
 
 // 自动选择英雄
 function onChangeAutoPickChampion(e: Event) {
   // @ts-ignore
-  window.electronAPI.setAutoPickChampion(parseInt(e.target.value));
+  window.electronAPI.setConfig({ autoPickChampionId: parseInt(e.target.value) });
 }
 
 // 自动ban英雄
 function onChangeAutoBanChampion(e: Event) {
   // @ts-ignore
-  window.electronAPI.setAutoBanChampion(parseInt(e.target.value));
+  window.electronAPI.setConfig({ autoBanChampionId: parseInt(e.target.value) });
 }
-
 
 </script>

@@ -1,9 +1,13 @@
 import { join } from 'node:path';
 import { BrowserWindow } from 'electron';
+import { Service } from 'typedi';
 
-export class MainWindowFactory {
-  create() {
-    const mainWindow = new BrowserWindow({
+
+@Service()
+export class MainWindow {
+
+  constructor() {
+    this.mainWindow = new BrowserWindow({
       title: 'Horserace',
       center: true,
       show: true,
@@ -19,9 +23,14 @@ export class MainWindowFactory {
       },
     });
 
-    mainWindow.setMenu(null);
-    mainWindow.loadFile(join(__dirname, 'renderer/index.html'));
+    this.mainWindow.setMenu(null);
+    this.mainWindow.loadFile(join(__dirname, 'renderer/index.html'));
     // mainWindow.webContents.openDevTools();
-    return mainWindow;
   }
+  private readonly mainWindow: BrowserWindow;
+
+  get webContents() {
+    return this.mainWindow.webContents;
+  }
+
 }

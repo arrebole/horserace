@@ -22,7 +22,7 @@ export class PerformanceJudger {
     if (score > 4000) {
       return "上等马"
     }
-    if (score > 3500) {
+    if (score > 3000) {
       return "中等马"
     }
     if (score > 2000) {
@@ -108,11 +108,11 @@ export class PerformanceJudger {
       
       // 排位外只加60%
       if (![420, 440].includes(game.queueId)) {
-        scoreItem *= 0.6;
+        scoreItem *= 0.7;
       }
 
       // 时间按照 25分钟 100% 超出和缺少的时间百分比权衡
-      score *= (1 + (25 - (game.gameDuration / 60)) / 100);
+      scoreItem *= (1 + (25 - (game.gameDuration / 60)) / 100);
       score += scoreItem;
     }
 

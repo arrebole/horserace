@@ -9,7 +9,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onInEndOfGame: (callback: any) => ipcRenderer.on('in-EndOfGame', callback),
 
   // 渲染器进程到主进程（单向）
-  setAutoBanChampion: (championId: number) => ipcRenderer.send('set-AutoBanChampion', championId),
-  setAutoPickChampion: (championId: number) => ipcRenderer.send('set-AutoPickChampion', championId),
-  setAutoAcceptMatch: (isAcceptMatch: number) => ipcRenderer.send('set-AutoAcceptMatch', isAcceptMatch),
+  setConfig: (config: any) => ipcRenderer.send('set-config', config),
 })
