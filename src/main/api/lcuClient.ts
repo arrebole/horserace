@@ -1,7 +1,6 @@
-import { EventEmitter } from 'node:events';
-import axios, { AxiosInstance } from 'axios';
 import { WebSocket } from 'ws';
 import { Agent } from 'https';
+import { EventEmitter } from 'events';
 import { Service } from 'typedi';
 import { Stage } from '../types/stage';
 import { LCUProcessUtil } from '../lcuProcessUtil';
@@ -13,33 +12,45 @@ import { RankedStats } from '../types/rank';
 import { SummonerEffect } from '../types/summonerEffect';
 import { Action, ChampSelectSession } from '../types/champSelectSession';
 import { PerformanceJudger } from '../performance';
+import axios, { AxiosInstance } from 'axios';
 
 @Service()
 export class LCUClient {
   constructor(private readonly lCUProcessUtil: LCUProcessUtil) {
-
-    lCUProcessUtil.subscription(({ wsBaseURL }) => {
-      this.webSocketClient?.removeAllListeners();
-      if (this.webSocketClient?.readyState === 1) {
-        this.webSocketClient.close();
-      }
-      this.webSocketClient = this.createConnect(wsBaseURL);
+    lCUProcessUtil.onExit(() => this.cleanConnect())
+    lCUProcessUtil.onExec(({ httpBaseURL, wsBaseURL }) => {
+      this.httpClient = this.createHttpConnect(httpBaseURL);
+      this.webSocketClient = this.createWSConnect(wsBaseURL);
     });
-
-    lCUProcessUtil.subscription(({ httpBaseURL }) => {
-      this.httpClient = axios.create({
-        baseURL: httpBaseURL,
-        httpsAgent: new Agent({ rejectUnauthorized: false }),
-      });
-    });
-
     this.eventEmitter = new EventEmitter();
   }
 
-  private createConnect(wsBaseURL: string) {
+  private cleanConnect() {
+    this.webSocketClient?.removeAllListeners();
+    if (this.webSocketClient?.readyState === 1) {
+      this.webSocketClient.close();
+    }
+    this.httpClient = null;
+    this.webSocketClient = null;
+  }
+
+  private createHttpConnect(httpBaseURL: string) {
+    return axios.create({
+      baseURL: httpBaseURL,
+      httpsAgent: new Agent({
+        keepAlive: true,
+        rejectUnauthorized: false,
+      }),
+    });
+  }
+
+  private createWSConnect(wsBaseURL: string) {
     const ws = new WebSocket(wsBaseURL,
       {
-        agent: new Agent({ rejectUnauthorized: false }),
+        agent: new Agent({ 
+          rejectUnauthorized: false,
+          keepAlive: true,
+        }),
       }
     );
 
@@ -48,14 +59,6 @@ export class LCUClient {
         JSON.stringify([5, 'OnJsonApiEvent'])
       );
       this.eventEmitter.emit('Connected');
-    });
-
-    ws.on('close', () => {
-      this.lCUProcessUtil.refresh();
-    });
-
-    ws.on('error', () => {
-      this.lCUProcessUtil.refresh();
     });
 
     ws.on('message', async (message) => {

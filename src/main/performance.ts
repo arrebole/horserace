@@ -47,9 +47,9 @@ export class PerformanceJudger {
       if (stats.firstBloodAssist) {
         scoreItem += 20;
       }
-      // 一塔 + 40
+      // 一塔 + 50
       if (stats.firstTowerKill) {
-        scoreItem += 40;
+        scoreItem += 50;
       }
       // 一塔助攻 + 20
       if (stats.firstTowerAssist) {
@@ -67,25 +67,25 @@ export class PerformanceJudger {
       if (stats.participantId > 0) {
         scoreItem += stats.participantId * 300;
       }
-      // 三杀 +60
+      // 三杀 +200
       if (stats.tripleKills > 0) {
-        scoreItem += stats.tripleKills * 60;
+        scoreItem += stats.tripleKills * 200;
       }
-      // 三杀 +20
+      // 双杀 +100
       if (stats.doubleKills > 0) {
-        scoreItem += stats.doubleKills * 20;
+        scoreItem += stats.doubleKills * 100;
       }
-      // 赢得比赛 + 100
+      // 赢得比赛 + 50
       if (stats.win) {
-        scoreItem += 100
+        scoreItem += 50
       }
 
       // 杀人 + 10 分
       scoreItem += stats.kills * 10;
       // 助攻 +5 分
       scoreItem += stats.assists * 5;
-      // 死亡 - 8 分
-      scoreItem -= stats.deaths * 8;
+      // 死亡 - 10 分
+      scoreItem -= stats.deaths * 10;
 
       // 补兵 每分钟8个刀以上加5分 ,9+10, 10+20
       let minute_minions_killed = stats.totalMinionsKilled / (game.gameDuration / 60);
@@ -111,8 +111,8 @@ export class PerformanceJudger {
         scoreItem *= 0.7;
       }
 
-      // 时间按照 25分钟 100% 超出和缺少的时间百分比权衡
-      scoreItem *= (1 + (25 - (game.gameDuration / 60)) / 100);
+      // 时间按照 28分钟 100% 超出和缺少的时间百分比权衡
+      scoreItem *= (1 + (28 - (game.gameDuration / 60)) / 100);
       score += scoreItem;
     }
 
