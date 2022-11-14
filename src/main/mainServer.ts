@@ -19,7 +19,7 @@ export class Horserace {
 
     // 等待接收对局状态 
     // 自动接受对局
-    this.lcuClient.on(Stage.ReadyCheck, async () => {
+    this.lcuClient.on('ReadyCheck', async () => {
       if (this.configure.autoAcceptMatch) {
         await this.lcuClient.acceptMatch();
       }
@@ -80,7 +80,7 @@ export class Horserace {
     });
 
     // 游戏开始阶段
-    this.lcuClient.on(Stage.GameStart, async () => {
+    this.lcuClient.on('GameStart', async () => {
       const game = await this.lcuClient.findGameflowSession();
       const teamOne = game.teamOne.map(summoner =>
         this.lcuClient.findSummonerEffect(summoner.summonerId),
@@ -95,7 +95,7 @@ export class Horserace {
     });
 
     // 游戏结算阶段
-    this.lcuClient.on(Stage.EndOfGame, async () => {
+    this.lcuClient.on('EndOfGame', async () => {
       // 发送游戏结束事件
       // 游戏结算后更新用户信息
       this.mainWindow.webContents.send('in-EndOfGame', null);
@@ -122,7 +122,6 @@ export class Horserace {
       if (config.autoPickChampionId) {
         this.configure.autoPickChampionId = config.autoPickChampionId;
       }
-      console.log(this.configure);
     });
 
     return this;

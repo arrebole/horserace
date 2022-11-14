@@ -25,7 +25,7 @@ export class MainWindow {
 
     this.mainWindow.setMenu(null);
     this.mainWindow.loadFile(join(__dirname, 'renderer/index.html'));
-    // mainWindow.webContents.openDevTools();
+    // this.mainWindow.webContents.openDevTools();
   }
   private readonly mainWindow: BrowserWindow;
 
